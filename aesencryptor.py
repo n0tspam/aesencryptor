@@ -1,4 +1,3 @@
-from base64 import b64encode, b64decode
 import sys
 from Crypto.Cipher import AES
 from os import urandom
